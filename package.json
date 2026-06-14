@@ -2,6 +2,7 @@
   "name": "image-generator-frontend",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Two-image upload tool that proxies to an n8n webhook and renders the generated image.",
   "scripts": {
     "dev": "vercel dev",
