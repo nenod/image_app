@@ -24,9 +24,26 @@ yarn-debug.log*
 yarn-error.log*
 
 # Environment files (keep secrets like webhook URLs out of git)
+# Ignore every .env variant, but keep the committed template.
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+
+# Secrets / credentials / keys
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+secrets.json
+credentials.json
 
 # Vercel
 .vercel
+.vercel/
+
+# Editor / IDE
+.idea/
+.vscode/
+*.iml
