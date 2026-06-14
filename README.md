@@ -33,6 +33,7 @@ same-origin `/api/generate` endpoint. The secret lives server-side in the
 | `app.js` | Client logic: previews, validation, calls `/api/generate` |
 | `api/generate.js` | Edge serverless proxy that holds the secret and validates input |
 | `vercel.json` | Security headers (CSP, HSTS, nosniff, frame/clickjacking, etc.) |
+| `dev-server.mjs` | Local dev server that runs the real proxy without the Vercel CLI |
 | `.env.example` | Template for the required env var |
 
 ## Security measures
@@ -51,16 +52,41 @@ same-origin `/api/generate` endpoint. The secret lives server-side in the
 
 ## Local development
 
-The serverless function requires the Vercel CLI (plain static hosting can't run
-`/api`):
+A plain static server (e.g. `python -m http.server`) can serve the UI but
+**cannot** run `/api/generate`, so generation will fail. Use one of the options
+below — both read `WEBHOOK_URL` from `.env.local`.
+
+First, set up the env file:
 
 ```bash
-npm i -g vercel        # one-time
 cp .env.example .env.local   # then put the real WEBHOOK_URL in .env.local
+```
+
+**Option A — bundled dev server (no account needed):**
+
+```bash
+node dev-server.mjs    # serves the site + the real proxy at http://localhost:3000
+```
+
+`dev-server.mjs` imports the actual `api/generate.js` handler, so local
+behaviour matches production exactly.
+
+**Option B — Vercel CLI (closest to production):**
+
+```bash
+npm i -g vercel        # one-time (or use: npx vercel ...)
 vercel dev             # serves the site + /api/generate at http://localhost:3000
 ```
 
 > `.env.local` is gitignored — never commit it.
+
+## Troubleshooting
+
+- **"Failed to generate image" with the proxy logging an empty / `application/json`
+  upstream response:** the request reached n8n but the workflow returned no
+  image. This is upstream, not the app — check the n8n execution log; the AI
+  image node is usually out of quota or hit a content filter. The proxy
+  deliberately rejects non-`image/*` responses rather than rendering them.
 
 ## Deploy (Vercel)
 
