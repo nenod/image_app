@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prijava — Generator slika</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ================= PROMO BANNER ================= -->
+  <div class="promo-banner">
+    <span>📦 Besplatno preuzimanje u trgovini 📦</span>
+    <span class="promo-banner__pause" aria-hidden="true">❚❚</span>
+  </div>
+
+  <!-- ================= HEADER ================= -->
+  <header class="site-header">
+    <a class="logo" href="index.html">
+      <svg class="logo__mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M4 22c8-1 13-6 18-16-1 9-6 17-14 18-2 0-4-1-4-2z" fill="#3643ba"/>
+      </svg>
+      DECATHLON
+    </a>
+  </header>
+
+  <!-- ================= AUTH CARD ================= -->
+  <main class="auth">
+    <div class="auth-card">
+      <h1 class="auth-card__title">Vaš račun</h1>
+
+      <!-- Mode tabs -->
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab is-active" id="tabLogin" type="button" role="tab" aria-selected="true">Prijava</button>
+        <button class="auth-tab" id="tabSignup" type="button" role="tab" aria-selected="false">Registracija</button>
+      </div>
+
+      <form class="auth-form" id="authForm" novalidate>
+        <label class="auth-field">
+          <span class="auth-field__label">E-mail</span>
+          <input class="auth-field__input" type="email" id="email" name="email" autocomplete="email" required />
+        </label>
+
+        <label class="auth-field">
+          <span class="auth-field__label">Lozinka</span>
+          <input class="auth-field__input" type="password" id="password" name="password" autocomplete="current-password" minlength="6" required />
+          <span class="auth-field__hint" id="passwordHint">Najmanje 6 znakova.</span>
+        </label>
+
+        <p class="auth-message" id="authMessage" role="alert" aria-live="polite"></p>
+
+        <button class="auth-submit" id="submitBtn" type="submit">Prijava</button>
+      </form>
+
+      <p class="auth-foot">
+        <a class="auth-foot__link" href="index.html">← Natrag na generator</a>
+      </p>
+    </div>
+  </main>
+
+  <script src="login.js" type="module"></script>
+</body>
+</html>

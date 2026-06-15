@@ -78,6 +78,7 @@ img { display: block; }
   font-size: 24px;
   letter-spacing: 0.5px;
   flex-shrink: 0;
+  text-decoration: none;
 }
 
 .logo__mark { width: 26px; height: 26px; }
@@ -420,3 +421,206 @@ img { display: block; }
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* =========================================================
+   AUTH — header account control + login page
+   ========================================================= */
+
+/* Login gate: hide the protected page until auth-ui.js confirms a session
+   (it removes .gated) or redirects to login.html. Prevents a content flash. */
+body.gated { visibility: hidden; }
+
+/* ---------- Header account control ---------- */
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.account__link,
+.account__user {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.account__link:hover { color: var(--dkt-blue); }
+
+.account__label {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account__logout {
+  appearance: none;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.account__logout:hover {
+  border-color: var(--dkt-blue);
+  color: var(--dkt-blue);
+}
+
+/* ---------- Login page ---------- */
+.auth {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: 0 6px 24px rgba(16, 24, 32, 0.06);
+}
+
+.auth-card__title {
+  font-size: 24px;
+  font-weight: 900;
+  margin: 0 0 24px;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  margin-bottom: 28px;
+}
+
+.auth-tab {
+  flex: 1;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--color-muted);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.auth-tab.is-active {
+  background: var(--color-surface);
+  color: var(--dkt-blue);
+  box-shadow: 0 1px 3px rgba(16, 24, 32, 0.12);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-field__label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.auth-field__input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 13px 14px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.auth-field__input:focus {
+  outline: 2px solid var(--dkt-blue);
+  border-color: var(--dkt-blue);
+}
+
+.auth-field__hint {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.auth-message {
+  display: none;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 11px 14px;
+  border-radius: var(--radius);
+}
+
+.auth-message.is-visible { display: block; }
+
+.auth-message--error {
+  background: #fdecec;
+  color: #b3261e;
+}
+
+.auth-message--success {
+  background: #e7f4ec;
+  color: #1d7a43;
+}
+
+.auth-submit {
+  appearance: none;
+  border: none;
+  background: var(--dkt-blue);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 14px 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.auth-submit:hover:not(:disabled) { background: var(--dkt-blue-hover); }
+
+.auth-submit:disabled {
+  background: #c4c7d0;
+  cursor: not-allowed;
+}
+
+.auth-foot {
+  margin: 24px 0 0;
+  text-align: center;
+}
+
+.auth-foot__link {
+  color: var(--color-muted);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.auth-foot__link:hover { color: var(--dkt-blue); }

@@ -47,3 +47,6 @@ credentials.json
 .idea/
 .vscode/
 *.iml
+
+# mcp servers
+.mcp.json

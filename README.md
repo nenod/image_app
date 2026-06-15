@@ -29,12 +29,47 @@ same-origin `/api/generate` endpoint. The secret lives server-side in the
 | File | Purpose |
 | --- | --- |
 | `index.html` | Markup only (no inline script/style, so CSP can be strict) |
-| `styles.css` | All styling |
+| `styles.css` | All styling (generator + auth page + header account control) |
 | `app.js` | Client logic: previews, validation, calls `/api/generate` |
 | `api/generate.js` | Edge serverless proxy that holds the secret and validates input |
+| `login.html` / `login.js` | Email + password sign-up / log-in page |
+| `auth.js` | Supabase Auth helpers (sign up / in / out, session, refresh) |
+| `auth-ui.js` | Renders the header account control on `index.html` |
+| `auth-config.js` | **Public** Supabase URL + publishable key (safe to commit) |
 | `vercel.json` | Security headers (CSP, HSTS, nosniff, frame/clickjacking, etc.) |
 | `dev-server.mjs` | Local dev server that runs the real proxy without the Vercel CLI |
 | `.env.example` | Template for the required env var |
+
+## Authentication (Supabase)
+
+Email + password accounts via [Supabase Auth](https://supabase.com/auth).
+**Login is required** to use the generator: `auth-ui.js` redirects to
+`login.html` when there is no valid session and only reveals `index.html` once
+signed in (the page starts hidden via `body.gated` to avoid a content flash).
+`login.html` lets a visitor sign up or log in; the header then shows their
+email + a logout button.
+
+- **No SDK / no build step.** `auth.js` calls the Supabase Auth REST API
+  (`/auth/v1/...`) directly with `fetch`, so `script-src 'self'` stays strict.
+  The only CSP change is adding the Supabase origin to `connect-src`
+  (`vercel.json`).
+- **The publishable key is public by design.** Unlike `WEBHOOK_URL`, the
+  Supabase project URL + publishable key are meant to ship in the browser
+  (`auth-config.js`); access is enforced by Supabase Auth / RLS, not key
+  secrecy. Safe to commit.
+- **Sessions** are stored in `localStorage` (`dkt-auth-session`) and the access
+  token is silently refreshed when expired.
+
+### One-time Supabase setup
+
+For **instant login after signup**, disable email confirmation:
+**Dashboard → Authentication → Sign In / Providers → Email → turn off
+"Confirm email"**. Leave it on if you want users to verify via an email link
+first (requires working SMTP); the UI handles both cases.
+
+> The gate is **client-side only** — it protects the UI, not `/api/generate`.
+> A determined user could still call the proxy directly. To enforce auth on
+> generation, verify the Supabase JWT inside the Edge proxy (`api/generate.js`).
 
 ## Security measures
 

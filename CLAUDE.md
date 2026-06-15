@@ -31,12 +31,30 @@ The browser must **never** see the real webhook URL.
   in `vercel.json` forbids inline scripts. Keep JS in `app.js`, CSS in
   `styles.css`. If you add inline code you must loosen the CSP (avoid this).
 
+## Auth (Supabase) — what's a secret and what isn't
+
+- Email/password accounts via Supabase Auth. **Login is required**: `auth-ui.js`
+  redirects to `login.html` when there's no valid session and reveals
+  `index.html` (removes `body.gated`) only once signed in. The gate is
+  client-side only — it protects the UI, not `/api/generate`.
+- `auth.js` calls the Supabase Auth REST API directly with `fetch` — **no SDK,
+  no CDN**, so `script-src 'self'` stays strict. The only CSP allowance is the
+  Supabase origin in `connect-src`.
+- The Supabase URL + **publishable** key in `auth-config.js` are **public by
+  design** — unlike `WEBHOOK_URL`, they're meant to ship in the browser. Do not
+  confuse them with the webhook secret; never put the webhook URL here.
+- Instant login requires **"Confirm email" OFF** in the Supabase dashboard
+  (manual step; no MCP tool for it). The UI also handles the confirm-on case.
+
 ## Layout
 
-- `index.html` — markup only; links `styles.css` + `app.js`.
+- `index.html` — markup only; links `styles.css` + `app.js` + `auth-ui.js`.
 - `styles.css` — theme via CSS variables (`--dkt-blue`, `--dkt-yellow`, …).
 - `app.js` — previews, client validation, fetch to `/api/generate`.
 - `api/generate.js` — Edge proxy: validates, forwards, validates response.
+- `login.html` / `login.js` — email + password sign-up / log-in page.
+- `auth.js` — Supabase Auth helpers (REST, no SDK); `auth-config.js` — public keys.
+- `auth-ui.js` — header account control (Prijava ↔ email + Odjava) on `index.html`.
 - `dev-server.mjs` — local server that runs the real proxy (no Vercel CLI).
 - `vercel.json` — security headers. `package.json` — `"type":"module"`, scripts.
 
