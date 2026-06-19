@@ -68,18 +68,24 @@ async function handleEvent(event, serviceKey) {
 
   if (type === "checkout.session.completed") {
     // First touch: map the subscription to the Supabase user and grant access.
-    const userId = obj.client_reference_id;
-    if (!userId) {
-      console.error("checkout.session.completed without client_reference_id");
-      return;
-    }
-    await patchProfile(serviceKey, `id=eq.${encodeURIComponent(userId)}`, {
+    // Prefer client_reference_id (set by pay.js); fall back to the email Stripe
+    // collected, so a checkout via a bare Payment Link still grants access.
+    const fields = {
       paid: true,
       stripe_customer_id: obj.customer || null,
       stripe_subscription_id: obj.subscription || null,
       subscription_status: "active",
       updated_at: new Date().toISOString(),
-    });
+    };
+    const userId = obj.client_reference_id;
+    const email = (obj.customer_details && obj.customer_details.email) || obj.customer_email;
+    if (userId) {
+      await patchProfile(serviceKey, `id=eq.${encodeURIComponent(userId)}`, fields);
+    } else if (email) {
+      await patchProfile(serviceKey, `email=ilike.${encodeURIComponent(email)}`, fields);
+    } else {
+      console.error("checkout.session.completed without client_reference_id or email");
+    }
     return;
   }
 
