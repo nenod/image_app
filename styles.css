@@ -624,3 +624,61 @@ body.gated { visibility: hidden; }
 }
 
 .auth-foot__link:hover { color: var(--dkt-blue); }
+
+/* ---------- Pay page ---------- */
+.pay-lead {
+  margin: 0 0 20px;
+  color: var(--color-muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.pay-price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+
+.pay-price__amount {
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--color-text);
+  line-height: 1;
+}
+
+.pay-price__period {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.pay-account {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+.pay-account strong { color: var(--color-text); }
+
+/* The pay button is an <a> styled like .auth-submit. */
+.pay-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.pay-btn[aria-disabled="true"] {
+  background: #c4c7d0;
+  pointer-events: none;
+}
+
+/* The logout control sits in the footer styled like a link. */
+.pay-logout {
+  appearance: none;
+  border: none;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+}

@@ -3,6 +3,8 @@
 // =========================================================
 // The real n8n webhook URL is NOT here. The browser talks only to our
 // own same-origin serverless proxy, which holds WEBHOOK_URL server-side.
+import { getSession } from "./auth.js";
+
 const ENDPOINT = "/api/generate";
 
 // Client-side guards (mirrored & enforced again on the server).
@@ -149,10 +151,18 @@ async function generate() {
   const timeout = setTimeout(() => controller.abort(), 120000); // 2 min
 
   try {
+    // The proxy requires a paying user — attach the Supabase access token.
+    const session = await getSession();
+    if (!session) {
+      window.location.replace("login.html");
+      return;
+    }
+
     // 2. Make the request — do NOT set Content-Type manually,
     //    the browser sets the multipart boundary automatically.
     const response = await fetch(ENDPOINT, {
       method: "POST",
+      headers: { Authorization: "Bearer " + session.access_token },
       body: formData,
       signal: controller.signal,
     });

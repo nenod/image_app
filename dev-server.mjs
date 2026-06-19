@@ -16,6 +16,7 @@ import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import handler from "./api/generate.js";
+import stripeWebhookHandler from "./api/stripe-webhook.js";
 
 const ROOT = fileURLToPath(new URL(".", import.meta.url));
 const PORT = process.env.PORT || 3000;
@@ -48,8 +49,13 @@ const MIME = {
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
-  // ---- API: delegate to the real proxy handler ----
-  if (url.pathname === "/api/generate") {
+  // ---- API: delegate to the real Edge handlers (same code as production) ----
+  const apiHandler =
+    url.pathname === "/api/generate" ? handler :
+    url.pathname === "/api/stripe-webhook" ? stripeWebhookHandler :
+    null;
+
+  if (apiHandler) {
     try {
       const chunks = [];
       for await (const c of req) chunks.push(c);
@@ -61,7 +67,7 @@ const server = createServer(async (req, res) => {
         body: req.method === "GET" || req.method === "HEAD" ? undefined : body,
       });
 
-      const webRes = await handler(request);
+      const webRes = await apiHandler(request);
       res.statusCode = webRes.status;
       webRes.headers.forEach((v, k) => res.setHeader(k, v));
       if (webRes.body) {
@@ -70,7 +76,7 @@ const server = createServer(async (req, res) => {
         res.end();
       }
     } catch (err) {
-      console.error("dev-server /api/generate error:", err);
+      console.error(`dev-server ${url.pathname} error:`, err);
       res.statusCode = 500;
       res.setHeader("Content-Type", "application/json");
       res.end(JSON.stringify({ error: "Local server error" }));

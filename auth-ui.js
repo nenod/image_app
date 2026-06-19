@@ -6,11 +6,13 @@
 //   2. once signed in, reveals the page (removes body.gated) and renders the
 //      header account control (email + "Odjava" logout).
 //
-// NOTE: this guards the UI only. It does NOT secure /api/generate — that would
-// require verifying the Supabase JWT inside the Edge proxy (api/generate.js).
+// Access also requires an ACTIVE SUBSCRIPTION: unpaid users are sent to
+// pay.html. This guards the UI; /api/generate enforces the same check
+// server-side (so the API is protected even if this gate is bypassed).
 // =========================================================
 
-import { getUser, signOut, isLoggedIn } from "./auth.js";
+import { getSession, signOut, isLoggedIn } from "./auth.js";
+import { fetchPaid } from "./lib/access.js";
 
 // Fast path: no session at all → redirect immediately, before any reveal.
 if (!isLoggedIn()) {
@@ -43,13 +45,18 @@ function renderSignedIn(user) {
 
 async function init() {
   // Validate (and refresh if needed) the stored session.
-  const user = await getUser();
-  if (!user) {
+  const session = await getSession();
+  if (!session || !session.user) {
     window.location.replace("login.html");
     return;
   }
+  // Signed in but no active subscription → send to the pay page.
+  if (!(await fetchPaid(session.access_token))) {
+    window.location.replace("pay.html");
+    return;
+  }
   document.body.classList.remove("gated"); // reveal the protected page
-  renderSignedIn(user);
+  renderSignedIn(session.user);
 }
 
 init();

@@ -6,6 +6,8 @@
 // Vercel's Edge runtime (Web-standard Request/Response/FormData).
 // =========================================================
 
+import { fetchPaid } from "../lib/access.js";
+
 export const config = { runtime: "edge" };
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -16,6 +18,25 @@ export default async function handler(req) {
   // Only POST is allowed.
   if (req.method !== "POST") {
     return errorResponse(405, "Method not allowed");
+  }
+
+  // Require a signed-in user with an ACTIVE SUBSCRIPTION. The client sends the
+  // Supabase access token as a Bearer header; entitlement is checked against
+  // profiles.paid (RLS scopes the read to this user). This is the real paywall
+  // boundary — the UI gate alone does not protect this endpoint.
+  const token = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+  if (!token) {
+    return errorResponse(401, "Authentication required");
+  }
+  let paid;
+  try {
+    paid = await fetchPaid(token);
+  } catch (err) {
+    console.error("Access check failed:", err);
+    return errorResponse(502, "Could not verify access");
+  }
+  if (!paid) {
+    return errorResponse(402, "An active subscription is required");
   }
 
   // The secret webhook URL is injected via the environment, never hardcoded.

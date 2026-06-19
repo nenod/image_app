@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pretplata — Generator slika</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ================= PROMO BANNER ================= -->
+  <div class="promo-banner">
+    <span>📦 Besplatno preuzimanje u trgovini 📦</span>
+    <span class="promo-banner__pause" aria-hidden="true">❚❚</span>
+  </div>
+
+  <!-- ================= HEADER ================= -->
+  <header class="site-header">
+    <a class="logo" href="index.html">
+      <svg class="logo__mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M4 22c8-1 13-6 18-16-1 9-6 17-14 18-2 0-4-1-4-2z" fill="#3643ba"/>
+      </svg>
+      DECATHLON
+    </a>
+  </header>
+
+  <!-- ================= PAY CARD ================= -->
+  <main class="auth">
+    <div class="auth-card">
+      <h1 class="auth-card__title">Pretplata</h1>
+      <p class="pay-lead">Za korištenje generatora slika potrebna je aktivna pretplata.</p>
+
+      <div class="pay-price">
+        <span class="pay-price__amount">$9.99</span>
+        <span class="pay-price__period">/ mjesec</span>
+      </div>
+
+      <p class="pay-account">Prijavljeni ste kao <strong id="payEmail"></strong></p>
+
+      <a class="auth-submit pay-btn" id="payBtn" href="#" rel="noopener">Pretplati se</a>
+
+      <p class="auth-message is-visible" id="payStatus" hidden></p>
+
+      <p class="auth-foot">
+        <button class="auth-foot__link pay-logout" id="payLogout" type="button">Odjava</button>
+      </p>
+    </div>
+  </main>
+
+  <script src="pay.js" type="module"></script>
+</body>
+</html>
